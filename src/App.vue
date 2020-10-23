@@ -1,10 +1,12 @@
 <template>
-  <div class="container">
-    <h1 class="text-center">Shizudaisei Finder!</h1>
+  <div class="container-fluid">
+    <router-link to="/">
+      <h1 class="text-center">Shizudaisei Finder!</h1>
+    </router-link>
   </div>
   <router-view />
   <footer class="container-fluid text-center bg-dark text-white">
-    <a href="https://"><img src="./assets/github.png" /></a>
+    <a href="https://"><img src="./assets/github.png"/></a>
     <address>
       作者の<a href="https://twitter.com/YutoMoriizumi">Twitter</a>
     </address>

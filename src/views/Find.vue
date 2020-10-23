@@ -36,25 +36,24 @@
     <div class="row align-items-center mb-2">
       <h1 class="col">検索結果</h1>
       <div class="col-auto">
-        <button class="btn btn-primary">一括フォロー</button>
+        <button class="btn btn-primary btn-lg">一括フォロー</button>
       </div>
-      <div class="col-lg-2"></div>
     </div>
-    <div class="container d-flex justify-content-around mb-5">
-      <div class="card col-5">
-        <div class="card-body">
-          <h4 class="card-title">アカウント名</h4>
-          <h6 class="card-subtitle">アカウントID</h6>
-          <p class="card-text">投稿内容</p>
-        </div>
-      </div>
-      <div class="card col-5">
-        <div class="card-body">
-          <h4 class="card-title">アカウント名</h4>
-          <h6 class="card-subtitle">アカウントID</h6>
-          <p class="card-text">投稿内容</p>
-        </div>
-      </div>
+    <div class="card-deck mb-5">
+      <UserCard />
+      <UserCard />
     </div>
   </div>
 </template>
+
+<script lang="ts">
+import { Options, Vue } from "vue-class-component";
+import UserCard from "@/components/UserCard.vue";
+
+@Options({
+  components: {
+    UserCard
+  }
+})
+export default class Find extends Vue {}
+</script>

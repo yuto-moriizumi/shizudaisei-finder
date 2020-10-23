@@ -1,9 +1,10 @@
 # CakePHP Application Skeleton
 
-[![Build Status](https://img.shields.io/travis/cakephp/app/master.svg?style=flat-square)](https://travis-ci.org/cakephp/app)
+[![Build Status](https://img.shields.io/github/workflow/status/cakephp/app/CakePHP%20App%20CI/master?style=flat-square)](https://github.com/cakephp/app/actions)
 [![Total Downloads](https://img.shields.io/packagist/dt/cakephp/app.svg?style=flat-square)](https://packagist.org/packages/cakephp/app)
+[![PHPStan](https://img.shields.io/badge/PHPStan-level%207-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
 
-A skeleton for creating applications with [CakePHP](https://cakephp.org) 3.x.
+A skeleton for creating applications with [CakePHP](https://cakephp.org) 4.x.
 
 The framework source code can be found here: [cakephp/cakephp](https://github.com/cakephp/cakephp).
 
@@ -15,13 +16,13 @@ The framework source code can be found here: [cakephp/cakephp](https://github.co
 If Composer is installed globally, run
 
 ```bash
-composer create-project --prefer-dist "cakephp/app:^3.8"
+composer create-project --prefer-dist cakephp/app
 ```
 
 In case you want to use a custom app dir name (e.g. `/myapp/`):
 
 ```bash
-composer create-project --prefer-dist "cakephp/app:^3.8" myapp
+composer create-project --prefer-dist cakephp/app myapp
 ```
 
 You can now either use your machine's webserver to view the default home page, or start
@@ -41,11 +42,12 @@ automated upgrades, so you have to do any updates manually.
 
 ## Configuration
 
-Read and edit `config/app.php` and setup the `'Datasources'` and any other
-configuration relevant for your application.
+Read and edit the environment specific `config/app_local.php` and setup the 
+`'Datasources'` and any other configuration relevant for your application.
+Other environment agnostic settings can be changed in `config/app.php`.
 
 ## Layout
 
-The app skeleton uses a subset of [Foundation](http://foundation.zurb.com/) (v5) CSS
+The app skeleton uses [Milligram](https://milligram.io/) (v1.3) minimalist CSS
 framework by default. You can, however, replace it with any other library or
 custom styles.

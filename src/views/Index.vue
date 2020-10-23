@@ -42,7 +42,8 @@ export default class Find extends Vue {
           CONTENT:
             "一日のエネルギーの95%を使ったのでもう動けはしないけれども、デザインを続けていこう　道中実装についても考えていた",
           CREATED_AT: "2020-02-02"
-        },{
+        },
+        {
           USER_NAME: "田中太郎",
           USER_ID: "tanaka999",
           IMG:
@@ -50,7 +51,8 @@ export default class Find extends Vue {
           CONTENT:
             "一日のエネルギーの95%を使ったのでもう動けはしないけれども、デザインを続けていこう　道中実装についても考えていた",
           CREATED_AT: "2020-02-02"
-        },{
+        },
+        {
           USER_NAME: "田中太郎",
           USER_ID: "tanaka999",
           IMG:

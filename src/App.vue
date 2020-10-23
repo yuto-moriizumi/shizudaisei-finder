@@ -1,9 +1,15 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div class="container">
+    <h1 class="text-center">Shizudaisei Finder!</h1>
   </div>
   <router-view />
+  <footer class="container-fluid text-center bg-dark text-white">
+    <a href="https://"><img src="./assets/github.png" /></a>
+    <address>
+      作者の<a href="https://twitter.com/YutoMoriizumi">Twitter</a>
+    </address>
+    <small>©2020 Yuto Moriizumi</small>
+  </footer>
 </template>
 
 <style>
@@ -11,8 +17,6 @@
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
 }
 
 #nav {

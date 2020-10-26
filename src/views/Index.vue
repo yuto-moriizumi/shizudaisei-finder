@@ -4,9 +4,9 @@
     <p class="lead mb-5">
       Shizudai Finderは、静大生のTwitterユーザを簡単に見つけられるWEBアプリです
     </p>
-    <router-link to="/find" class="btn btn-primary"
-      >Twitterでログイン</router-link
-    >
+    <button class="btn btn-primary" v-on:click="redirect">
+      Twitterでログイン
+    </button>
   </div>
   <div class="container">
     <div class="card-deck mb-5">
@@ -29,7 +29,7 @@ import { User } from "@/components/User.ts";
     UserCard
   }
 })
-export default class Find extends Vue {
+export default class Index extends Vue {
   private users: Array<User> = [];
   mounted() {
     setTimeout(() => {
@@ -63,6 +63,10 @@ export default class Find extends Vue {
         }
       ];
     }, 500);
+  }
+
+  redirect() {
+    window.location.href = "../twitter/auth.php";
   }
 }
 </script>

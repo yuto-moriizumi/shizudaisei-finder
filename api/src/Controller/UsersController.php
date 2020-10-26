@@ -1,7 +1,10 @@
 <?php
 declare(strict_types=1);
 
+        
 namespace App\Controller;
+
+use Abraham\TwitterOAuth\TwitterOAuth;
 
 /**
  * Users Controller
@@ -18,9 +21,24 @@ class UsersController extends AppController
      */
     public function index()
     {
-        $users = $this->paginate($this->Users);
+        if ($this->request->is('post')) {
+        } else {
+            $users = $this->paginate($this->Users->find('all', ['order' => ['created_at'=>'desc']]));
+            foreach ($users as $user) {
+            }
 
+            $json = json_encode($users);
+            $this->set(compact('json'));
+            $this->viewBuilder()->setLayout('ajax');
+        }
+    }
+
+    public function index2()
+    {
+        $users = $this->paginate($this->Users->find('all', ['order' => ['created_at'=>'desc']]));
+        // $users = $this->paginate($this->Users);
         $this->set(compact('users'));
+        $this->viewBuilder()->setLayout('default');
     }
 
     /**

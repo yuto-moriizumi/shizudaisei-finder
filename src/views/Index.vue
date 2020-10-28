@@ -22,7 +22,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import UserCard from "@/components/UserCard.vue";
-import { User } from "@/components/User.ts";
+import { User, UserResponce } from "@/components/User.ts";
 
 @Options({
   components: {
@@ -32,37 +32,59 @@ import { User } from "@/components/User.ts";
 export default class Index extends Vue {
   private users: Array<User> = [];
   mounted() {
-    setTimeout(() => {
-      this.users = [
-        {
-          USER_NAME: "田中太郎",
-          USER_ID: "tanaka999",
-          IMG:
-            "https://pbs.twimg.com/profile_images/1287396439522332672/UYs39jOS_400x400.jpg",
-          CONTENT:
-            "一日のエネルギーの95%を使ったのでもう動けはしないけれども、デザインを続けていこう　道中実装についても考えていた",
-          CREATED_AT: "2020-02-02"
-        },
-        {
-          USER_NAME: "田中太郎",
-          USER_ID: "tanaka999",
-          IMG:
-            "https://pbs.twimg.com/profile_images/1287396439522332672/UYs39jOS_400x400.jpg",
-          CONTENT:
-            "一日のエネルギーの95%を使ったのでもう動けはしないけれども、デザインを続けていこう　道中実装についても考えていた",
-          CREATED_AT: "2020-02-02"
-        },
-        {
-          USER_NAME: "田中太郎",
-          USER_ID: "tanaka999",
-          IMG:
-            "https://pbs.twimg.com/profile_images/1287396439522332672/UYs39jOS_400x400.jpg",
-          CONTENT:
-            "一日のエネルギーの95%を使ったのでもう動けはしないけれども、デザインを続けていこう　道中実装についても考えていた",
-          CREATED_AT: "2020-02-02"
-        }
-      ];
-    }, 500);
+    console.log("vue mounted2!");
+
+    const req = new XMLHttpRequest();
+    req.open("GET", "../api/users/");
+    req.send(null);
+
+    req.onloadend = () => {
+      const RESPONCE_TEXT = JSON.parse(req.responseText);
+      console.log(RESPONCE_TEXT);
+
+      this.users = RESPONCE_TEXT.users.map((user: UserResponce) => {
+        return {
+          ID: user.id,
+          USER_NAME: user.name,
+          USER_SCREEN_NAME: user.screen_name,
+          IMG: user.img_url,
+          CONTENT: user.content,
+          CREATED_AT: user.created_at
+        };
+      });
+    };
+
+    // setTimeout(() => {
+    //   this.users = [
+    //     {
+    //       USER_NAME: "田中太郎",
+    //       USER_ID: "tanaka999",
+    //       IMG:
+    //         "https://pbs.twimg.com/profile_images/1287396439522332672/UYs39jOS_400x400.jpg",
+    //       CONTENT:
+    //         "一日のエネルギーの95%を使ったのでもう動けはしないけれども、デザインを続けていこう 道中実装についても考えていた",
+    //       CREATED_AT: "2020-02-02"
+    //     },
+    //     {
+    //       USER_NAME: "田中太郎",
+    //       USER_ID: "tanaka999",
+    //       IMG:
+    //         "https://pbs.twimg.com/profile_images/1287396439522332672/UYs39jOS_400x400.jpg",
+    //       CONTENT:
+    //         "一日のエネルギーの95%を使ったのでもう動けはしないけれども、デザインを続けていこう 道中実装についても考えていた",
+    //       CREATED_AT: "2020-02-02"
+    //     },
+    //     {
+    //       USER_NAME: "田中太郎",
+    //       USER_ID: "tanaka999",
+    //       IMG:
+    //         "https://pbs.twimg.com/profile_images/1287396439522332672/UYs39jOS_400x400.jpg",
+    //       CONTENT:
+    //         "一日のエネルギーの95%を使ったのでもう動けはしないけれども、デザインを続けていこう 道中実装についても考えていた",
+    //       CREATED_AT: "2020-02-02"
+    //     }
+    //   ];
+    // }, 500);
   }
 
   redirect() {

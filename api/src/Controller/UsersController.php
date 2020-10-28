@@ -69,7 +69,7 @@ class UsersController extends AppController
             }
         }
             
-        // $user_accounts=$connection->get('users/lookup', ['user_id'=>"783214,782627782488580100",'include_entities'=>false]);
+        $user_accounts=$connection->get('users/lookup', ['user_id'=>implode(',', array_keys($users_dict)),'include_entities'=>false]);
         if (is_object($user_accounts)&&property_exists($user_accounts, 'errors')) {
             $json = json_encode(['users'=>array_values($users_dict),'error'=>$user_accounts->errors]);
             $this->set(compact('json'));
@@ -77,14 +77,14 @@ class UsersController extends AppController
             return;
         }
 
-        $user_accounts=$connection->get('friends/ids', ['user_id'=>implode(',', array_keys($users_dict))]);
+        
 
         foreach ($user_accounts as $user) {
             $users_dict[$user->id_str]['name']=$user->name;
             $users_dict[$user->id_str]['screen_name']=$user->screen_name;
             $users_dict[$user->id_str]['img_url']=$user->profile_image_url_https;
             if ($is_logged_in) {
-                $users_dict[$user->id_str]['is_following']=in_array($user->id_str, $following_ids);
+                // $users_dict[$user->id_str]['is_following']=in_array($user->id_str, $following_ids);
             }
         }
         //エラー処理（まだやってない）

@@ -29,9 +29,9 @@ class UsersController extends AppController
         $request = $this->request;
         $from=$request->getQuery('from', '1990');
         $to=$request->getQuery('to', '9999');
-        // $users = $this->paginate($this->Users->find('all', ['condition'=>['and'=>['created_at >='=>$from.'-01-01 00:00:00','created_at <='=>$to.'-12-31 23:59:59']],'order' => ['created_at'=>'desc'],'count'=>100]))->toArray();
-        // $users = $this->Users->find('all', ['condition'=>['and'=>['created_at >='=>'1990-01-01 00:00:00','created_at <='=>$to.'1990-12-31 23:59:59']],'order' => ['created_at'=>'desc'],'count'=>100])
-        $users = $this->Users->find('all', ['order' => ['created_at'=>'desc'],'count'=>100])
+        // $users = $this->paginate($this->Users->find('all', ['condition'=>['and'=>['created_at >='=>$from.'-01-01 00:00:00','created_at <='=>$to.'-12-31 23:59:59']],'order' => ['created_at'=>'desc'],'limit'=>100]))->toArray();
+        // $users = $this->Users->find('all', ['condition'=>['and'=>['created_at >='=>'1990-01-01 00:00:00','created_at <='=>$to.'1990-12-31 23:59:59']],'order' => ['created_at'=>'desc'],'limit'=>100])
+        $users = $this->Users->find('all', ['order' => ['created_at'=>'desc'],'limit'=>100])
         ->where(function (QueryExpression $exp, Query $q) use ($from,$to) {
             return $exp->between('created_at', $from.'-01-01 00:00:00', $to.'-12-31 23:59:59');
         })->toArray();
@@ -74,14 +74,14 @@ class UsersController extends AppController
         }
             
         $user_accounts=$connection->get('users/lookup', ['user_id'=>implode(',', array_keys($users_dict)),'include_entities'=>false]);
+        // $user_accounts=$connection->get('users/lookup', ['user_id'=>implode(',', array_slice(array_keys($users_dict), 0, 100)),'include_entities'=>false]);
         if (is_object($user_accounts)&&property_exists($user_accounts, 'errors')) {
             $json = json_encode(['users'=>array_values($users_dict),'error'=>$user_accounts->errors]);
+            // $json = json_encode(['user_accounts'=>$user_accounts]);
             $this->set(compact('json'));
             $this->viewBuilder()->setLayout('ajax');
             return;
         }
-
-        
 
         foreach ($user_accounts as $user) {
             $users_dict[$user->id_str]['name']=$user->name;

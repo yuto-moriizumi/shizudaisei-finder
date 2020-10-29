@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use Cake\Database\Expression\QueryExpression;
 use Cake\ORM\Query;
+use Cake\I18n\Time;
 
 use Abraham\TwitterOAuth\TwitterOAuth;
 
@@ -29,9 +30,11 @@ class UsersController extends AppController
         $request = $this->request;
         $from=$request->getQuery('from', '1990-01-01');
         $to=$request->getQuery('to', '2200-12-31');
+        $include=$request->getQuery('include', false);
+        $include=$include==="true"?true:false;
         // $users = $this->paginate($this->Users->find('all', ['condition'=>['and'=>['created_at >='=>$from.'-01-01 00:00:00','created_at <='=>$to.'-12-31 23:59:59']],'order' => ['created_at'=>'desc'],'limit'=>100]))->toArray();
         // $users = $this->Users->find('all', ['condition'=>['and'=>['created_at >='=>'1990-01-01 00:00:00','created_at <='=>$to.'1990-12-31 23:59:59']],'order' => ['created_at'=>'desc'],'limit'=>100])
-        $users = $this->Users->find('all', ['order' => ['created_at'=>'desc'],'limit'=>100])
+        $users = $this->Users->find('all', ['order' => ['created_at'=>'desc']])
         ->where(function (QueryExpression $exp, Query $q) use ($from,$to) {
             return $exp->between('created_at', $from.' 00:00:00', $to.' 23:59:59');
         })->toArray();
@@ -72,6 +75,16 @@ class UsersController extends AppController
             }
             $following_ids=$following_ids->ids;
         }
+
+        //includeがfalseであれば、フォロー中のユーザを除外します
+        if (!$include) {
+            $users_dict=array_filter($users_dict, function ($user_id) use ($following_ids) {
+                return !in_array($user_id, $following_ids); //フォロー中のユーザでない
+            }, ARRAY_FILTER_USE_KEY);
+        }
+
+        //users/lookupは100件までしか受け付けないので絞る
+        $users_dict=array_slice($users_dict, 0, 100, true);
             
         $user_accounts=$connection->get('users/lookup', ['user_id'=>implode(',', array_keys($users_dict)),'include_entities'=>false]);
         // $user_accounts=$connection->get('users/lookup', ['user_id'=>implode(',', array_slice(array_keys($users_dict), 0, 100)),'include_entities'=>false]);
@@ -83,22 +96,56 @@ class UsersController extends AppController
             return;
         }
 
+        //取得した情報を追加
+        $found_user_ids=[];
         foreach ($user_accounts as $user) {
+            array_push($found_user_ids, $user->id_str);
             $users_dict[$user->id_str]['name']=$user->name;
             $users_dict[$user->id_str]['screen_name']=$user->screen_name;
             $users_dict[$user->id_str]['img_url']=$user->profile_image_url_https;
+            $date=$users_dict[$user->id_str]['created_at'];
+            $date = Time::parse($date);
+            $users_dict[$user->id_str]['created_at']=$date->i18nFormat('yyyy-MM-dd');
             if ($is_logged_in) {
                 $users_dict[$user->id_str]['is_following']=in_array($user->id_str, $following_ids);
             }
         }
-        //エラー処理（まだやってない）
-        // if(array_key_exists("errors",$user_accounts))
 
-        // array_push($users, ['res'=>implode(',', array_keys($users_dict))], ['res'=>$user_accounts]);
+        $cc=0;
+        //Twitterを退会したユーザをDBから削除
+        foreach ($users_dict as $user_object) {
+            if (in_array($user_object['id'], $found_user_ids)) {
+                continue;
+            } //img_urlが存在すれば、Twitterから正しく取得できたということ
+            $cc+=1;
+            // array_push($deeee2, [$user_object['id'].' doesnt has img_url',$user_object['img_url']]);
+            try {
+                $user_entity = $this->Users->get($user_object->id);
+                $this->Users->delete($user_entity);
+            } catch (\Throwable $th) {
+            }
+        }
             
-        $json = json_encode(['users'=>array_values($users_dict),'request'=>$request->getQueryParams(),'user'=>$user]);
+        $json = json_encode(['users'=>array_values($users_dict),'request'=>$request->getQueryParams(),'deleted_count'=>$cc]);
         $this->set(compact('json'));
         $this->viewBuilder()->setLayout('ajax');
+    }
+
+    public function test()
+    {
+        // $users=$this->Users->find('all', ['order' => ['created_at'=>'desc'],'limit'=>100]);
+        // require_once(ROOT . DS. 'src' . DS  . 'Controller' .DS  . 'secret.php');
+        // $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET);
+        // $user_accounts=$connection->get('users/lookup', ['user_id'=>implode(',', array_keys($users_dict)),'include_entities'=>false]);
+
+        // $json = json_encode(['users'=>array_values($users_dict),'request'=>$request->getQueryParams(),'d'=>['sc'=>$SC,'sd'=>$SD]]);
+        $array=[];
+        $array["10"]=10;
+        $array["5"]=5;
+        $json = json_encode(['array1'=>$array]);
+        $this->set(compact('json'));
+        $this->viewBuilder()->setLayout('ajax');
+        $this->viewBuilder()->setTemplate('printr');
     }
 
     public function auth()
@@ -130,7 +177,6 @@ class UsersController extends AppController
             }
         }
         
-        
         $this->set(compact('json'));
         $this->viewBuilder()->setLayout('ajax');
         $this->viewBuilder()->setTemplate('index');
@@ -145,14 +191,6 @@ class UsersController extends AppController
         } else {
             return ['screen_name'=>$user->screen_name];
         }
-    }
-
-    public function test()
-    {
-    }
-
-    public function test2()
-    {
     }
 
     public function login()

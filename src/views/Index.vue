@@ -8,7 +8,7 @@
       <div class="row justify-content-center">
         <button
           v-bind:class="{
-            btn,
+            btn: true,
             'col-auto': true,
             'mx-2': true,
             'btn-primary': !isLoggedIn,
@@ -81,7 +81,7 @@ export default class Index extends Vue {
     req2.onloadend = () => {
       const RESPONCE_TEXT = JSON.parse(req2.responseText);
       console.log(RESPONCE_TEXT);
-      if (RESPONCE_TEXT.name !== null) this.isLoggedIn = true;
+      if (RESPONCE_TEXT.screen_name !== null) this.isLoggedIn = true;
     };
   }
 

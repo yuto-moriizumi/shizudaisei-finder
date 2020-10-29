@@ -19,6 +19,7 @@
                   <small class="card-subtitle"
                     >@{{ user.USER_SCREEN_NAME }}</small
                   >
+                  <small>{{ user.ID }}</small>
                 </div>
               </a>
             </div>
@@ -33,7 +34,7 @@
           <div class="row align-items-center">
             <small class="col">{{ user.CREATED_AT }}</small>
             <button
-              class="btn btn-primary col-auto"
+              class="btn btn-primary btn-sm col-auto"
               v-if="showButton && user.IS_FOLLOWING !== undefined"
               v-on:click="follow(user.ID)"
               v-bind:disabled="user.IS_FOLLOWING"

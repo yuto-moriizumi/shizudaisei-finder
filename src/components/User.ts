@@ -5,6 +5,7 @@ export type User = {
     IMG: string;
     CONTENT: string;
     CREATED_AT: string;
+    IS_FOLLOWING?: boolean;
 };
 
 export type UserResponce = {
@@ -14,4 +15,5 @@ export type UserResponce = {
     img_url: string;
     content: string;
     created_at: string;
+    is_following: boolean;
   };

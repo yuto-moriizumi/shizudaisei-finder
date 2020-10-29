@@ -1,7 +1,8 @@
 <?php
 session_start();
-require_once './secret.php';
-require_once '../api/vendor/autoload.php';
+// require_once './twitter/secret.php';
+
+// require_once '../api/vendor/autoload.php';
 
 use Abraham\TwitterOAuth\TwitterOAuth;
 
@@ -16,7 +17,7 @@ if (isset($_REQUEST['oauth_token']) && $request_token['oauth_token'] !== $_REQUE
     die('Error!');
 }
 //OAuth トークンも用いて TwitterOAuth をインスタンス化
-$connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $request_token['oauth_token'], $request_token['oauth_token_secret']);
+$connection = new TwitterOAuth($CONSUMER_KEY, $CONSUMER_SECRET, $request_token['oauth_token'], $request_token['oauth_token_secret']);
 //配列access_tokenにOauthトークンとTokenSecretを入れる
 // $_SESSION['access_token']
 $_SESSION['access_token'] = $connection->oauth("oauth/access_token", ["oauth_verifier" => $_REQUEST['oauth_verifier']]);
@@ -30,4 +31,8 @@ $_SESSION['access_token'] = $connection->oauth("oauth/access_token", ["oauth_ver
 // session_regenerate_id();
 
 //リダイレクト
-header('location: ../dist/#/find/');
+// header('location: ../dist/#/find/');
+?>
+<script>
+    window.location.href = "../../dist/#/find/";
+</script>

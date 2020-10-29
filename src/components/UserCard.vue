@@ -20,10 +20,11 @@
           <small class="col">{{ user.CREATED_AT }}</small>
           <button
             class="btn btn-primary col-auto"
-            v-if="showButton"
+            v-if="showButton && user.IS_FOLLOWING !== undefined"
             v-on:click="follow(user.ID)"
+            v-bind:disabled="user.IS_FOLLOWING"
           >
-            フォロー
+            {{ user.IS_FOLLOWING ? "フォロー済" : "フォロー" }}
           </button>
         </div>
       </div>
@@ -46,6 +47,7 @@ export default class UserCard extends Vue {
   private showButton = false;
 
   follow(id: string) {
+    if (this.user.IS_FOLLOWING !== false) return; //フォロー済なら何もしない
     const req = new XMLHttpRequest();
     req.open("GET", "../api/users/follow/" + id);
     req.send(null);

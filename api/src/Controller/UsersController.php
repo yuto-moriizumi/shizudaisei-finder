@@ -19,7 +19,7 @@ class UsersController extends AppController
 {
     /**
      * Index method
-     *
+     * 登録済みユーザ一覧をjsonで出力します
      * @return \Cake\Http\Response|null|void Renders view
      */
     public function index()
@@ -47,26 +47,30 @@ class UsersController extends AppController
         foreach ($users as $user) {
             $users_dict[$user["id"]]=$user;
         }
-        //OAuthトークンとシークレットも使って TwitterOAuth をインスタンス化
-        $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET);
-        //ユーザ情報を100件取得
 
+        //ログイン済みであるか確認
         session_start();
+        $is_logged_in = false;
+        if (array_key_exists('access_token', $_SESSION)) {
+            $is_logged_in=true;
+        }
 
-        //ログイン中か確認し、そうであればscreen_nameを取得
-        $screen_name = $this->getAuthUserScreenName($connection);
-        $is_logged_in = !array_key_exists('error', $screen_name);
+        //TwitterAPIと接続
+        require_once(ROOT . DS. 'src' . DS  . 'Controller' .DS  . 'secret.php');
+        $access_token = $is_logged_in?$_SESSION['access_token']:['oauth_token'=>ACCESS_TOKEN,'oauth_token_secret'=>ACCESS_TOKEN_SECRET];
+        $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token['oauth_token'], $access_token['oauth_token_secret']);
+        
         $following_ids=[];
-
         //ログインしている場合はフォローしているアカウントのID一覧を取得
         if ($is_logged_in) {
-            $following_ids=$connection->get('friends/ids', ['screen_name'=>$screen_name['screen_name'],'count'=>5000,'stringify_ids'=>true]);
+            $following_ids=$connection->get('friends/ids', ['screen_name'=>$user->screen_name,'count'=>5000,'stringify_ids'=>true]);
             if (is_object($following_ids)&&property_exists($following_ids, 'errors')) {
                 $json = json_encode(['users'=>[],'error'=>$following_ids]);
                 $this->set(compact('json'));
                 $this->viewBuilder()->setLayout('ajax');
                 return;
             }
+            $following_ids=$following_ids->ids;
         }
             
         $user_accounts=$connection->get('users/lookup', ['user_id'=>implode(',', array_keys($users_dict)),'include_entities'=>false]);
@@ -84,7 +88,7 @@ class UsersController extends AppController
             $users_dict[$user->id_str]['screen_name']=$user->screen_name;
             $users_dict[$user->id_str]['img_url']=$user->profile_image_url_https;
             if ($is_logged_in) {
-                // $users_dict[$user->id_str]['is_following']=in_array($user->id_str, $following_ids);
+                $users_dict[$user->id_str]['is_following']=in_array($user->id_str, $following_ids);
             }
         }
         //エラー処理（まだやってない）
@@ -92,7 +96,7 @@ class UsersController extends AppController
 
         // array_push($users, ['res'=>implode(',', array_keys($users_dict))], ['res'=>$user_accounts]);
             
-        $json = json_encode(['users'=>array_values($users_dict),'request'=>$request->getQueryParams()]);
+        $json = json_encode(['users'=>array_values($users_dict),'request'=>$request->getQueryParams(),'user'=>$user]);
         $this->set(compact('json'));
         $this->viewBuilder()->setLayout('ajax');
     }
@@ -102,7 +106,11 @@ class UsersController extends AppController
         //事前にセッションを使ってトークン取得済である必要があります
         session_start();
         if (!array_key_exists('access_token', $_SESSION)) {
-            return ['screen_name'=>null,'error'=>'user not logged in'];
+            $json= json_encode(['screen_name'=>null,'error'=>'user not logged in','session'=>$_SESSION]);
+            $this->set(compact('json'));
+            $this->viewBuilder()->setLayout('ajax');
+            $this->viewBuilder()->setTemplate('index');
+            return;
         }
         $access_token = $_SESSION['access_token'];
         require_once(ROOT . DS. 'src' . DS  . 'Controller' .DS  . 'secret.php');
@@ -137,6 +145,30 @@ class UsersController extends AppController
         } else {
             return ['screen_name'=>$user->screen_name];
         }
+    }
+
+    public function test()
+    {
+    }
+
+    public function test2()
+    {
+    }
+
+    public function login()
+    {
+        require_once(ROOT . DS. 'src' . DS  . 'Controller' .DS  . 'secret.php');
+        $CONSUMER_KEY=CONSUMER_KEY;
+        $CONSUMER_SECRET=CONSUMER_SECRET;
+        $this->set(compact('CONSUMER_KEY', 'CONSUMER_SECRET'));
+    }
+
+    public function callback()
+    {
+        require_once(ROOT . DS. 'src' . DS  . 'Controller' .DS  . 'secret.php');
+        $CONSUMER_KEY=CONSUMER_KEY;
+        $CONSUMER_SECRET=CONSUMER_SECRET;
+        $this->set(compact('CONSUMER_KEY', 'CONSUMER_SECRET'));
     }
         
 

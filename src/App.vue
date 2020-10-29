@@ -6,7 +6,9 @@
   </div>
   <router-view />
   <footer class="container-fluid text-center bg-dark text-white">
-    <a href="https://"><img src="./assets/github.png"/></a>
+    <a href="https://github.com/yuto-moriizumi/shizudaisei-finder"
+      ><img src="./assets/github.png"
+    /></a>
     <address>
       作者の<a href="https://twitter.com/YutoMoriizumi">Twitter</a>
     </address>

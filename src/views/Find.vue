@@ -45,8 +45,21 @@
     <div class="row align-items-center mb-2">
       <h1 class="col">検索結果</h1>
       <div class="col-auto">
-        <button class="btn btn-primary btn-lg">一括フォロー</button>
+        <button class="btn btn-primary btn-lg" v-on:click="follow">
+          一括フォロー
+        </button>
       </div>
+    </div>
+    <div class="alert alert-success" v-if="showFollowAlert">
+      {{ followedCount }}人フォローしました
+      <button
+        type="button"
+        class="close"
+        aria-label="Close"
+        v-on:click="showFollowAlert = false"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
     <div class="card-deck mb-5">
       <div class="container" v-if="users.length == 0">
@@ -82,6 +95,8 @@ export default class Find extends Vue {
   to = 9999;
   include = false;
   users = Array<User>();
+  showFollowAlert = false;
+  followedCount = 0;
   mounted() {
     console.log("cookie", document.cookie);
     const req = new XMLHttpRequest();
@@ -114,19 +129,34 @@ export default class Find extends Vue {
       const RESPONCE_TEXT = JSON.parse(req.responseText);
       console.log(RESPONCE_TEXT);
 
-      
-
       this.users = RESPONCE_TEXT.users.map((user: UserResponce) => {
         return {
-          ID:user.id,
+          ID: user.id,
           USER_NAME: user.name,
           USER_SCREEN_NAME: user.screen_name,
           IMG: user.img_url,
           CONTENT: user.content,
-          CREATED_AT: user.created_at
+          CREATED_AT: user.created_at,
+          IS_FOLLOWING: user.is_following
         };
       });
     };
+  }
+
+  follow() {
+    this.followedCount = 0;
+    this.users.forEach(user => {
+      if (user.IS_FOLLOWING !== false) return; //フォロー済か対象ユーザが見つからなかったなら何もしない
+      const req = new XMLHttpRequest();
+      req.open("GET", "../api/users/follow/" + user.ID);
+      req.send(null);
+      req.onloadend = () => {
+        const RESPONCE_TEXT = JSON.parse(req.responseText);
+        console.log(RESPONCE_TEXT);
+        this.followedCount += 1;
+      };
+    });
+    this.showFollowAlert = true;
   }
 }
 </script>

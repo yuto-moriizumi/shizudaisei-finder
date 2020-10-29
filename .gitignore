@@ -21,3 +21,4 @@ pnpm-debug.log*
 *.sln
 *.sw?
 twitter/secret.php
+src/components/secret.php

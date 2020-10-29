@@ -56,6 +56,9 @@ export default class UserCard extends Vue {
     req.onloadend = () => {
       const RESPONCE_TEXT = JSON.parse(req.responseText);
       console.log(RESPONCE_TEXT);
+      if (RESPONCE_TEXT.responce.errors == undefined)
+        this.user.IS_FOLLOWING = true;
+      else alert("フォローに失敗しました");
     };
   }
 }

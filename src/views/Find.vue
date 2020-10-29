@@ -12,19 +12,26 @@
     <h1>検索条件</h1>
     <form class="mx-5 mb-3" @submit="find">
       <div class="row align-items-baseline">
-        <select name="from" class="custom-select col" v-model="from">
+        <input
+          type="date"
+          name="from"
+          class="col from-control"
+          v-model="from"
+        />
+        <!-- <select name="from" class="custom-select col" v-model="from">
           <option value="1990">指定しない</option>
           <option>2017</option>
           <option>2018</option>
           <option>2019</option>
-        </select>
+        </select> -->
         <p class="col-auto">から</p>
-        <select name="to" class="custom-select col" v-model="to">
+        <input type="date" name="to" class="col from-control" v-model="to" />
+        <!-- <select name="to" class="custom-select col" v-model="to">
           <option value="9999">指定しない</option>
           <option>2017</option>
           <option>2018</option>
           <option>2019</option>
-        </select>
+        </select> -->
         <p class="col-auto">まで</p>
         <div class="custom-control custom-checkbox col-auto">
           <input
@@ -92,8 +99,8 @@ import { User, UserResponce } from "@/components/User";
 export default class Find extends Vue {
   name = "";
   profileImgUrl = "./img/github.png";
-  from = 1990;
-  to = 9999;
+  from = "2020-01-01";
+  to = "2020-12-31";
   include = false;
   users = Array<User>();
   showFollowAlert = false;

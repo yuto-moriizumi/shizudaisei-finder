@@ -27,13 +27,13 @@ class UsersController extends AppController
         require_once(ROOT . DS. 'src' . DS  . 'Controller' .DS  . 'secret.php');
         // require_once './secret.php';
         $request = $this->request;
-        $from=$request->getQuery('from', '1990');
-        $to=$request->getQuery('to', '9999');
+        $from=$request->getQuery('from', '1990-01-01');
+        $to=$request->getQuery('to', '2200-12-31');
         // $users = $this->paginate($this->Users->find('all', ['condition'=>['and'=>['created_at >='=>$from.'-01-01 00:00:00','created_at <='=>$to.'-12-31 23:59:59']],'order' => ['created_at'=>'desc'],'limit'=>100]))->toArray();
         // $users = $this->Users->find('all', ['condition'=>['and'=>['created_at >='=>'1990-01-01 00:00:00','created_at <='=>$to.'1990-12-31 23:59:59']],'order' => ['created_at'=>'desc'],'limit'=>100])
         $users = $this->Users->find('all', ['order' => ['created_at'=>'desc'],'limit'=>100])
         ->where(function (QueryExpression $exp, Query $q) use ($from,$to) {
-            return $exp->between('created_at', $from.'-01-01 00:00:00', $to.'-12-31 23:59:59');
+            return $exp->between('created_at', $from.' 00:00:00', $to.' 23:59:59');
         })->toArray();
 
         if (count($users)===0) {

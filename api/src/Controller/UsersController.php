@@ -131,6 +131,45 @@ class UsersController extends AppController
         $this->viewBuilder()->setLayout('ajax');
     }
 
+    public function cron()
+    {
+        require_once(ROOT . DS. 'src' . DS  . 'Controller' .DS  . 'secret.php');
+
+        $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET);
+        
+        $tweets=$connection->get('search/tweets', [
+            'q'=>'#春から静大',
+            'count'=>100,
+            'result_type'=>'recent',
+            'include_entities'=>false
+        ]);
+        
+        if (property_exists($tweets, 'errors')) {
+            $json = json_encode(['errors'=>$tweets->errors]);
+            $this->set(compact('json'));
+            $this->viewBuilder()->setLayout('ajax');
+            $this->viewBuilder()->setTemplate('printr');
+            return;
+        }
+
+        $users=[];
+        //各ツイートから必要な情報を抜き出してDBに保存
+        foreach ($tweets->statuses as $tweet) {
+            $user=$this->Users->newEmptyEntity();
+            $user['id']=$tweet->user->id_str;
+            $user['tweet_id']=$tweet->id_str;
+            $user['content']=$tweet->text;
+            $user['created_at']= Time::parse($tweet->created_at);
+            $result=$this->Users->save($user)?true:false;
+            array_push($users, [$result,$user]);
+        }
+        
+        $json = json_encode(['users'=>$users]);
+        $this->set(compact('json'));
+        $this->viewBuilder()->setLayout('ajax');
+        $this->viewBuilder()->setTemplate('printr');
+    }
+
     public function test()
     {
         // $users=$this->Users->find('all', ['order' => ['created_at'=>'desc'],'limit'=>100]);

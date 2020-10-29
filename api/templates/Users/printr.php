@@ -1,1 +1,4 @@
-<?php print_r($json);
+<?php
+echo '<pre>';
+print_r($json);
+echo '</pre>';

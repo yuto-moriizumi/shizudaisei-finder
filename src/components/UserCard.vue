@@ -3,11 +3,24 @@
     <div class="card h-100 mx-0">
       <div class="card-header">
         <div class="row">
-          <img :src="user.IMG" alt="" class="col" />
+          <div class="col-auto">
+            <img :src="user.IMG" alt="" class="img-thumbnail" />
+          </div>
           <div class="col">
             <div class="container">
-              <h4 class="card-title row">{{ user.USER_NAME }}</h4>
-              <h6 class="card-subtitle row">@{{ user.USER_SCREEN_NAME }}</h6>
+              <a
+                v-bind:href="'https://twitter.com/' + user.USER_SCREEN_NAME"
+                target="_blank"
+              >
+                <div class="row">
+                  <h6 class="card-title">{{ user.USER_NAME }}</h6>
+                </div>
+                <div class="row">
+                  <small class="card-subtitle"
+                    >@{{ user.USER_SCREEN_NAME }}</small
+                  >
+                </div>
+              </a>
             </div>
           </div>
         </div>

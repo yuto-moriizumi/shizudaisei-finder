@@ -61,7 +61,7 @@
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
-    <div class="container" v-if="users.length == 0">
+    <div class="container" v-if="notFound">
       <div class="alert alert-danger row">
         検索結果が見つかりませんでした
       </div>
@@ -98,6 +98,7 @@ export default class Find extends Vue {
   users = Array<User>();
   showFollowAlert = false;
   followedCount = 0;
+  notFound = false;
   mounted() {
     const req = new XMLHttpRequest();
     req.open("GET", "../api/users/auth/");
@@ -140,6 +141,7 @@ export default class Find extends Vue {
           IS_FOLLOWING: user.is_following
         };
       });
+      this.notFound = this.users.length == 0;
     };
   }
 

@@ -61,13 +61,14 @@
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
-    <div class="card-deck mb-5">
-      <div class="container" v-if="users.length == 0">
-        <div class="alert alert-danger row">
-          検索結果が見つかりませんでした
-        </div>
+    <div class="container" v-if="users.length == 0">
+      <div class="alert alert-danger row">
+        検索結果が見つかりませんでした
       </div>
-
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="card-deck">
       <UserCard
         v-for="user in users"
         v-bind:key="user.USER_ID"
@@ -98,7 +99,6 @@ export default class Find extends Vue {
   showFollowAlert = false;
   followedCount = 0;
   mounted() {
-    console.log("cookie", document.cookie);
     const req = new XMLHttpRequest();
     req.open("GET", "../api/users/auth/");
     req.send(null);

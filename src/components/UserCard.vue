@@ -1,31 +1,33 @@
 <template>
-  <div class="card">
-    <div class="card-header">
-      <div class="row">
-        <img :src="user.IMG" alt="" class="col" />
-        <div class="col">
-          <div class="container">
-            <h4 class="card-title row">{{ user.USER_NAME }}</h4>
-            <h6 class="card-subtitle row">@{{ user.USER_SCREEN_NAME }}</h6>
+  <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-5">
+    <div class="card h-100 mx-0">
+      <div class="card-header">
+        <div class="row">
+          <img :src="user.IMG" alt="" class="col" />
+          <div class="col">
+            <div class="container">
+              <h4 class="card-title row">{{ user.USER_NAME }}</h4>
+              <h6 class="card-subtitle row">@{{ user.USER_SCREEN_NAME }}</h6>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="card-body">
-      <p class="card-text">
-        {{ user.CONTENT }}
-      </p>
-      <div class="container">
-        <div class="row align-items-center">
-          <small class="col">{{ user.CREATED_AT }}</small>
-          <button
-            class="btn btn-primary col-auto"
-            v-if="showButton && user.IS_FOLLOWING !== undefined"
-            v-on:click="follow(user.ID)"
-            v-bind:disabled="user.IS_FOLLOWING"
-          >
-            {{ user.IS_FOLLOWING ? "フォロー済" : "フォロー" }}
-          </button>
+      <div class="card-body">
+        <p class="card-text">
+          {{ user.CONTENT }}
+        </p>
+        <div class="container">
+          <div class="row align-items-center">
+            <small class="col">{{ user.CREATED_AT }}</small>
+            <button
+              class="btn btn-primary col-auto"
+              v-if="showButton && user.IS_FOLLOWING !== undefined"
+              v-on:click="follow(user.ID)"
+              v-bind:disabled="user.IS_FOLLOWING"
+            >
+              {{ user.IS_FOLLOWING ? "フォロー済" : "フォロー" }}
+            </button>
+          </div>
         </div>
       </div>
     </div>

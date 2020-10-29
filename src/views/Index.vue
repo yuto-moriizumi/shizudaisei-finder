@@ -4,11 +4,31 @@
     <p class="lead mb-5">
       Shizudai Finderは、静大生のTwitterユーザを簡単に見つけられるWEBアプリです
     </p>
-    <button class="btn btn-primary" v-on:click="redirect">
-      Twitterでログイン
-    </button>
+    <div class="container">
+      <div class="row justify-content-center">
+        <button
+          v-bind:class="{
+            btn,
+            'col-auto': true,
+            'mx-2': true,
+            'btn-primary': !isLoggedIn,
+            'btn-secondary': isLoggedIn
+          }"
+          v-on:click="redirect"
+        >
+          Twitterでログイン
+        </button>
+        <router-link
+          to="/find"
+          class="btn btn-primary col-auto mx-2"
+          v-if="isLoggedIn"
+        >
+          静大生を探す
+        </router-link>
+      </div>
+    </div>
   </div>
-  <div class="container">
+  <div class="container-fluid">
     <div class="card-deck mb-5">
       <UserCard
         v-for="user in users"
@@ -31,6 +51,7 @@ import { User, UserResponce } from "@/components/User.ts";
 })
 export default class Index extends Vue {
   private users: Array<User> = [];
+  private isLoggedIn = false;
   mounted() {
     console.log("vue mounted2!");
 
@@ -54,41 +75,18 @@ export default class Index extends Vue {
       });
     };
 
-    // setTimeout(() => {
-    //   this.users = [
-    //     {
-    //       USER_NAME: "田中太郎",
-    //       USER_ID: "tanaka999",
-    //       IMG:
-    //         "https://pbs.twimg.com/profile_images/1287396439522332672/UYs39jOS_400x400.jpg",
-    //       CONTENT:
-    //         "一日のエネルギーの95%を使ったのでもう動けはしないけれども、デザインを続けていこう 道中実装についても考えていた",
-    //       CREATED_AT: "2020-02-02"
-    //     },
-    //     {
-    //       USER_NAME: "田中太郎",
-    //       USER_ID: "tanaka999",
-    //       IMG:
-    //         "https://pbs.twimg.com/profile_images/1287396439522332672/UYs39jOS_400x400.jpg",
-    //       CONTENT:
-    //         "一日のエネルギーの95%を使ったのでもう動けはしないけれども、デザインを続けていこう 道中実装についても考えていた",
-    //       CREATED_AT: "2020-02-02"
-    //     },
-    //     {
-    //       USER_NAME: "田中太郎",
-    //       USER_ID: "tanaka999",
-    //       IMG:
-    //         "https://pbs.twimg.com/profile_images/1287396439522332672/UYs39jOS_400x400.jpg",
-    //       CONTENT:
-    //         "一日のエネルギーの95%を使ったのでもう動けはしないけれども、デザインを続けていこう 道中実装についても考えていた",
-    //       CREATED_AT: "2020-02-02"
-    //     }
-    //   ];
-    // }, 500);
+    const req2 = new XMLHttpRequest();
+    req2.open("GET", "../api/users/auth/");
+    req2.send(null);
+    req2.onloadend = () => {
+      const RESPONCE_TEXT = JSON.parse(req2.responseText);
+      console.log(RESPONCE_TEXT);
+      if (RESPONCE_TEXT.name !== null) this.isLoggedIn = true;
+    };
   }
 
   redirect() {
-    window.location.href = "../twitter/auth.php";
+    window.location.href = "../api/users/login/";
   }
 }
 </script>

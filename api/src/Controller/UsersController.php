@@ -31,7 +31,7 @@ class UsersController extends AppController
         $from=$request->getQuery('from', '1990-01-01');
         $to=$request->getQuery('to', '2200-12-31');
         $include=$request->getQuery('include', false);
-        $include=$include==="true"?true:false;
+        $include=$include=="true"?true:false;
         // $users = $this->paginate($this->Users->find('all', ['condition'=>['and'=>['created_at >='=>$from.'-01-01 00:00:00','created_at <='=>$to.'-12-31 23:59:59']],'order' => ['created_at'=>'desc'],'limit'=>100]))->toArray();
         // $users = $this->Users->find('all', ['condition'=>['and'=>['created_at >='=>'1990-01-01 00:00:00','created_at <='=>$to.'1990-12-31 23:59:59']],'order' => ['created_at'=>'desc'],'limit'=>100])
         $users = $this->Users->find('all', ['order' => ['created_at'=>'desc']])

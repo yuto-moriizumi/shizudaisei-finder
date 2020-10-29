@@ -56,7 +56,7 @@ export default class Index extends Vue {
     console.log("vue mounted2!");
 
     const req = new XMLHttpRequest();
-    req.open("GET", "../api/users/");
+    req.open("GET", "../api/users/?include=true");
     req.send(null);
 
     req.onloadend = () => {

@@ -1,13 +1,13 @@
 <template>
-  <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-5">
+  <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-5">
     <div class="card h-100 mx-0">
       <div class="card-header">
-        <div class="row">
+        <div class="row justfy-content-center">
           <div class="col-auto">
             <img :src="user.IMG" alt="" class="img-thumbnail" />
           </div>
           <div class="col">
-            <div class="container">
+            <div class="container-fluid">
               <a
                 v-bind:href="'https://twitter.com/' + user.USER_SCREEN_NAME"
                 target="_blank"
@@ -30,7 +30,9 @@
         <p class="card-text">
           {{ user.CONTENT }}
         </p>
-        <div class="container">
+      </div>
+      <div class="card-footer">
+        <div class="container-fluid">
           <div class="row align-items-center">
             <small class="col">{{ user.CREATED_AT }}</small>
             <button

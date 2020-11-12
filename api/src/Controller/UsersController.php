@@ -133,19 +133,20 @@ class UsersController extends AppController
 
     public function cron()
     {
+        //定期的に呼び出され、#春から静大を使ったツイートを取得します
         require_once(ROOT . DS. 'src' . DS  . 'Controller' .DS  . 'secret.php');
 
         $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET);
         
-        $tweets=$connection->get('search/tweets', [
+        $tweets=json_decode($connection->get('search/tweets', [ //連想配列としてパース
             'q'=>'#春から静大',
             'count'=>100,
             'result_type'=>'recent',
             'include_entities'=>false
-        ]);
+        ]), true);
         
-        if (property_exists($tweets, 'errors')) {
-            $json = json_encode(['errors'=>$tweets->errors]);
+        if (array_key_exists('errors', $tweets)) {
+            $json = json_encode(['errors'=>$tweets['errors']]);
             $this->set(compact('json'));
             $this->viewBuilder()->setLayout('ajax');
             $this->viewBuilder()->setTemplate('printr');
@@ -155,11 +156,14 @@ class UsersController extends AppController
         $users=[];
         //各ツイートから必要な情報を抜き出してDBに保存
         foreach ($tweets->statuses as $tweet) {
+            if (array_key_exists('retweeted_status', $tweet)) { //リツイートであれば除外する
+                continue;
+            }
             $user=$this->Users->newEmptyEntity();
             $user['id']=$tweet->user->id_str;
             $user['tweet_id']=$tweet->id_str;
             $user['content']=$tweet->text;
-            $user['created_at']= Time::parse($tweet->created_at);
+            $user['created_at']= Time::parse($tweet['created_at']);
             $result=$this->Users->save($user)?true:false;
             array_push($users, [$result,$user]);
         }

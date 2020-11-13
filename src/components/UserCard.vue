@@ -1,5 +1,6 @@
 <template>
   <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-5">
+    <!-- col-12 col-sm-6 col-md-4 col-lg-3 -->
     <div class="card h-100 mx-0">
       <div class="card-header">
         <div class="row justfy-content-center">
@@ -19,7 +20,7 @@
                   <small class="card-subtitle"
                     >@{{ user.USER_SCREEN_NAME }}</small
                   >
-                  <small>{{ user.ID }}</small>
+                  <!-- <small>{{ user.ID }}</small> -->
                 </div>
               </a>
             </div>

@@ -120,6 +120,7 @@ export default class Find extends Vue {
 
   find(event: any) {
     event.preventDefault();
+    this.showFollowAlert = false;
     console.log(this.from, this.to, this.include);
     const req = new XMLHttpRequest();
     req.open(
@@ -162,6 +163,7 @@ export default class Find extends Vue {
         const RESPONCE_TEXT = JSON.parse(req.responseText);
         console.log(RESPONCE_TEXT);
         this.followedCount += 1;
+        user.IS_FOLLOWING = true;
       };
     });
     this.showFollowAlert = true;

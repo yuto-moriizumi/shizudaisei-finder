@@ -54,29 +54,26 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import { User } from "@/components/User.ts";
+import axios from "axios";
 
 @Options({
   props: {
     user: {},
-    showButton: false
-  }
+    showButton: false,
+  },
 })
 export default class UserCard extends Vue {
   private user!: User;
   private showButton = false;
 
-  follow(id: string) {
+  follow() {
     if (this.user.IS_FOLLOWING !== false) return; //フォロー済なら何もしない
-    const req = new XMLHttpRequest();
-    req.open("GET", "../api/users/follow/" + id);
-    req.send(null);
-    req.onloadend = () => {
-      const RESPONCE_TEXT = JSON.parse(req.responseText);
-      console.log(RESPONCE_TEXT);
-      if (RESPONCE_TEXT.responce.errors == undefined)
-        this.user.IS_FOLLOWING = true;
+    axios.get("../api/users/follow/" + this.user.ID).then((res) => {
+      const json = JSON.parse(res.data);
+      console.log(json);
+      if (json.responce.errors == undefined) this.user.IS_FOLLOWING = true;
       else alert("フォローに失敗しました");
-    };
+    });
   }
 }
 </script>

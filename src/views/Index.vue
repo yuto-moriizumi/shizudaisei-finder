@@ -12,7 +12,7 @@
             'col-auto': true,
             'mx-2': true,
             'btn-primary': !isLoggedIn,
-            'btn-secondary': isLoggedIn
+            'btn-secondary': isLoggedIn,
           }"
           v-on:click="redirect"
         >
@@ -43,46 +43,37 @@
 import { Options, Vue } from "vue-class-component";
 import UserCard from "@/components/UserCard.vue";
 import { User, UserResponce } from "@/components/User.ts";
+import axios from "axios";
 
 @Options({
   components: {
-    UserCard
-  }
+    UserCard,
+  },
 })
 export default class Index extends Vue {
   private users: Array<User> = [];
   private isLoggedIn = false;
   mounted() {
-    console.log("vue mounted2!");
-
-    const req = new XMLHttpRequest();
-    req.open("GET", "../api/users/?include=true");
-    req.send(null);
-
-    req.onloadend = () => {
-      const RESPONCE_TEXT = JSON.parse(req.responseText);
-      console.log(RESPONCE_TEXT);
-
-      this.users = RESPONCE_TEXT.users.map((user: UserResponce) => {
+    axios.get("../api/users/?include=true").then((res) => {
+      const json = JSON.parse(res.data);
+      console.log(json);
+      this.users = json.users.map((user: UserResponce) => {
         return {
           ID: user.id,
           USER_NAME: user.name,
           USER_SCREEN_NAME: user.screen_name,
           IMG: user.img_url,
           CONTENT: user.content,
-          CREATED_AT: user.created_at
+          CREATED_AT: user.created_at,
         };
       });
-    };
+    });
 
-    const req2 = new XMLHttpRequest();
-    req2.open("GET", "../api/users/auth/");
-    req2.send(null);
-    req2.onloadend = () => {
-      const RESPONCE_TEXT = JSON.parse(req2.responseText);
-      console.log(RESPONCE_TEXT);
-      if (RESPONCE_TEXT.screen_name !== null) this.isLoggedIn = true;
-    };
+    axios.get("../api/users/auth/").then((res) => {
+      const json = JSON.parse(res.data);
+      console.log(json);
+      if (json.screen_name !== null) this.isLoggedIn = true;
+    });
   }
 
   redirect() {

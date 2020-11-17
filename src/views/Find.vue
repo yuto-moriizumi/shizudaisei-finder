@@ -103,6 +103,7 @@
 import { Options, Vue } from "vue-class-component";
 import UserCard from "@/components/UserCard.vue";
 import { User, UserResponce } from "@/components/User";
+import axios from "axios";
 
 @Options({
   components: {
@@ -129,23 +130,20 @@ export default class Find extends Vue {
   };
 
   mounted() {
-    const req = new XMLHttpRequest();
-    req.open("GET", "../api/users/auth/");
-    req.send(null);
-    req.onloadend = () => {
-      const RESPONCE_TEXT = JSON.parse(req.responseText);
-      console.log(RESPONCE_TEXT);
-      this.name = RESPONCE_TEXT.name;
+    axios.get("../api/users/auth/").then((res) => {
+      const json = JSON.parse(res.data);
+      console.log(json);
+      this.name = json.name;
       if (this.name === null) window.location.href = "../twitter/auth.php"; //未認証であれば認証にリダイレクト
-      this.profileImgUrl = RESPONCE_TEXT.img_url;
-    };
+      this.profileImgUrl = json.img_url;
+    });
   }
 
   find(event: any) {
     event.preventDefault();
     this.showFollowAlert = false;
     console.log(this.from, this.to, this.include_follow);
-    const req = new XMLHttpRequest();
+
     const query =
       "../api/users/?from=" +
       this.from +
@@ -159,13 +157,11 @@ export default class Find extends Vue {
         })
         .join("");
     console.log(query);
-    req.open("GET", query);
-    req.send(null);
-    req.onloadend = () => {
-      const RESPONCE_TEXT = JSON.parse(req.responseText);
-      console.log(RESPONCE_TEXT);
 
-      this.users = RESPONCE_TEXT.users.map((user: UserResponce) => {
+    axios.get(query).then((res) => {
+      const json = JSON.parse(res.data);
+      console.log(json);
+      this.users = json.users.map((user: UserResponce) => {
         return {
           ID: user.id,
           USER_NAME: user.name,
@@ -176,23 +172,20 @@ export default class Find extends Vue {
           IS_FOLLOWING: user.is_following,
         };
       });
-      this.notFound = this.users.length == 0;
-    };
+      this.notFound = this.users.length == 0; //検索結果が0件であれば「見つかりませんでした」と表示
+    });
   }
 
   follow() {
     this.followedCount = 0;
     this.users.forEach((user) => {
       if (user.IS_FOLLOWING !== false) return; //フォロー済か対象ユーザが見つからなかったなら何もしない
-      const req = new XMLHttpRequest();
-      req.open("GET", "../api/users/follow/" + user.ID);
-      req.send(null);
-      req.onloadend = () => {
-        const RESPONCE_TEXT = JSON.parse(req.responseText);
-        console.log(RESPONCE_TEXT);
+      axios.get("../api/users/follow/" + user.ID).then((res) => {
+        const json = JSON.parse(res.data);
+        console.log(json);
         this.followedCount += 1;
         user.IS_FOLLOWING = true;
-      };
+      });
     });
     this.showFollowAlert = true;
   }

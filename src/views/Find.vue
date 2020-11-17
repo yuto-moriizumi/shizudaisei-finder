@@ -10,48 +10,62 @@
   </div>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-lg-1 col-xl-2"></div>
+      <div class="col-xl-1"></div>
       <div class="col">
-        <h1>検索条件</h1>
+        <h1 class="text-center text-sm-left">検索条件</h1>
         <form class="mx-5 mb-3" @submit="find">
           <div class="row align-items-baseline">
-            <input
-              type="date"
-              name="from"
-              class="col-auto from-control"
-              v-model="from"
-            />
+            <input type="date" class="col-auto from-control" v-model="from" />
             <p class="col-auto">から</p>
-            <input
-              type="date"
-              name="to"
-              class="col-auto from-control"
-              v-model="to"
-            />
+            <input type="date" class="col-auto from-control" v-model="to" />
             <p class="col-auto">まで</p>
             <div class="custom-control custom-checkbox col-auto">
               <input
-                id="include"
+                id="include_follow"
                 type="checkbox"
                 class="custom-control-input"
-                v-model="include"
+                v-model="include_follow"
               />
-              <label class="custom-control-label" for="include"
+              <label class="custom-control-label" for="include_follow"
                 >フォローしている人を含む</label
               >
             </div>
-            <button class="btn btn-primary col-auto">
-              検索
-            </button>
+          </div>
+          <fieldset class="mb-3">
+            <div class="row align-items-baseline">
+              <legend class="col-form-label col-12 col-lg-1">学部</legend>
+              <div
+                class="custom-control custom-checkbox col-12 col-sm-6 col-md-4 col-lg-auto mr-xl-4"
+                v-for="(faculty, key) in faculties"
+                :key="key"
+              >
+                <input
+                  :id="key"
+                  type="checkbox"
+                  class="custom-control-input"
+                  v-model="faculties[key].include"
+                />
+                <label class="custom-control-label" :for="key">{{
+                  faculty.name
+                }}</label>
+              </div>
+            </div>
+            <small class="text-muted"
+              >チェックを外すとその学部と思われるユーザを除外します（正確ではありません）</small
+            >
+          </fieldset>
+          <div class="text-center">
+            <button class="btn btn-primary col-8">検索</button>
           </div>
         </form>
         <div class="row align-items-center mb-2">
-          <h1 class="col">検索結果</h1>
-          <div class="col-auto">
-            <button class="btn btn-primary btn-lg" v-on:click="follow">
-              一括フォロー
-            </button>
-          </div>
+          <h1 class="col-12 col-sm-6 text-center text-sm-left">検索結果</h1>
+          <button
+            class="btn btn-primary btn-lg col-8 col-sm-auto text-center text-sm-left mx-auto"
+            v-on:click="follow"
+          >
+            一括フォロー
+          </button>
         </div>
         <div class="alert alert-success" v-if="showFollowAlert">
           {{ followedCount }}人フォローしました
@@ -70,7 +84,7 @@
           </div>
         </div>
       </div>
-      <div class="col-lg-1 col-xl-2"></div>
+      <div class="col-xl-1"></div>
     </div>
   </div>
   <div class="container-fluid">
@@ -92,19 +106,28 @@ import { User, UserResponce } from "@/components/User";
 
 @Options({
   components: {
-    UserCard
-  }
+    UserCard,
+  },
 })
 export default class Find extends Vue {
   name = "";
   profileImgUrl = "./img/github.png";
   from = "2020-01-01";
   to = "2020-12-31";
-  include = false;
+  include_follow = false;
   users = Array<User>();
   showFollowAlert = false;
   followedCount = 0;
   notFound = false;
+  faculties = {
+    hss: { name: "人文社会科学部", include: true },
+    edu: { name: "教育学部", include: true },
+    sci: { name: "理学部", include: true },
+    agr: { name: "農学部", include: true },
+    inf: { name: "情報学部", include: true },
+    eng: { name: "工学部", include: true },
+  };
+
   mounted() {
     const req = new XMLHttpRequest();
     req.open("GET", "../api/users/auth/");
@@ -121,17 +144,22 @@ export default class Find extends Vue {
   find(event: any) {
     event.preventDefault();
     this.showFollowAlert = false;
-    console.log(this.from, this.to, this.include);
+    console.log(this.from, this.to, this.include_follow);
     const req = new XMLHttpRequest();
-    req.open(
-      "GET",
+    const query =
       "../api/users/?from=" +
-        this.from +
-        "&to=" +
-        this.to +
-        "&include=" +
-        this.include
-    );
+      this.from +
+      "&to=" +
+      this.to +
+      "&include_follow=" +
+      this.include_follow +
+      Object.entries(this.faculties)
+        .map((entry) => {
+          return "&" + entry[0] + "=" + entry[1].include;
+        })
+        .join("");
+    console.log(query);
+    req.open("GET", query);
     req.send(null);
     req.onloadend = () => {
       const RESPONCE_TEXT = JSON.parse(req.responseText);
@@ -145,7 +173,7 @@ export default class Find extends Vue {
           IMG: user.img_url,
           CONTENT: user.content,
           CREATED_AT: user.created_at,
-          IS_FOLLOWING: user.is_following
+          IS_FOLLOWING: user.is_following,
         };
       });
       this.notFound = this.users.length == 0;
@@ -154,7 +182,7 @@ export default class Find extends Vue {
 
   follow() {
     this.followedCount = 0;
-    this.users.forEach(user => {
+    this.users.forEach((user) => {
       if (user.IS_FOLLOWING !== false) return; //フォロー済か対象ユーザが見つからなかったなら何もしない
       const req = new XMLHttpRequest();
       req.open("GET", "../api/users/follow/" + user.ID);

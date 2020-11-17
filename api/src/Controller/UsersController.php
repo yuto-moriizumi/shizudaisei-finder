@@ -30,14 +30,35 @@ class UsersController extends AppController
         $request = $this->request;
         $from=$request->getQuery('from', '1990-01-01');
         $to=$request->getQuery('to', '2200-12-31');
-        $include=$request->getQuery('include', false);
+        $include=$request->getQuery('include_follow', false);
         $include=$include=="true"?true:false;
+
+        //学部リスト
+        $FACULITIES=["hss"=>"人文","edu"=>"教育","sci"=>"理学","agr"=>"農学","inf"=>"情報学","eng"=>"工学"];
+
         // $users = $this->paginate($this->Users->find('all', ['condition'=>['and'=>['created_at >='=>$from.'-01-01 00:00:00','created_at <='=>$to.'-12-31 23:59:59']],'order' => ['created_at'=>'desc'],'limit'=>100]))->toArray();
         // $users = $this->Users->find('all', ['condition'=>['and'=>['created_at >='=>'1990-01-01 00:00:00','created_at <='=>$to.'1990-12-31 23:59:59']],'order' => ['created_at'=>'desc'],'limit'=>100])
+        
         $users = $this->Users->find('all', ['order' => ['created_at'=>'desc']])
         ->where(function (QueryExpression $exp, Query $q) use ($from,$to) {
             return $exp->between('created_at', $from.' 00:00:00', $to.' 23:59:59');
-        })->toArray();
+        });
+        //特定の学部と思われるユーザを検索結果に含めるか
+        foreach ($FACULITIES as $key => $value) {
+            $include_faculty=$request->getQuery($key, true); //デフォルトでは含める
+            $include_faculty=$include_faculty=="true"?true:false;
+            if ($include_faculty===true) {
+                continue;
+            } //含めない場合は、除外する条件を追加
+            $users=$users->where(function (QueryExpression $exp, Query $q) use ($value) {
+                return $exp->notLike('content', '%'.$value.'%');
+            });
+        };
+        // debug($users);
+        // $users->limit(40);
+        $users=$users->toArray();
+        // debug($users);
+        
 
         if (count($users)===0) {
             $json = json_encode(['users'=>[],'request'=>$request->getQueryParams()]);

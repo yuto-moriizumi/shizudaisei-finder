@@ -104,6 +104,7 @@ import { Options, Vue } from "vue-class-component";
 import UserCard from "@/components/UserCard.vue";
 import { User, UserResponce } from "@/components/User";
 import axios from "axios";
+import qs from "qs";
 
 @Options({
   components: {
@@ -142,20 +143,19 @@ export default class Find extends Vue {
   find(event: any) {
     event.preventDefault();
     this.showFollowAlert = false;
-    console.log(this.from, this.to, this.include_follow);
 
     const query =
-      "../api/users/?from=" +
-      this.from +
-      "&to=" +
-      this.to +
-      "&include_follow=" +
-      this.include_follow +
-      Object.entries(this.faculties)
-        .map((entry) => {
-          return "&" + entry[0] + "=" + entry[1].include;
-        })
-        .join("");
+      "../api/users/?" +
+      qs.stringify({
+        from: this.from,
+        to: this.to,
+        include_follow: this.include_follow,
+        ...Object.fromEntries(
+          Object.entries(this.faculties).map((entry) => {
+            return [entry[0], entry[1].include];
+          })
+        ),
+      });
     console.log(query);
 
     axios.get(query).then((res) => {

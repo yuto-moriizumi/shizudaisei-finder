@@ -55,9 +55,7 @@ export default class Index extends Vue {
   private isLoggedIn = false;
   mounted() {
     axios.get("../api/users/?include=true").then((res) => {
-      const json = JSON.parse(res.data);
-      console.log(json);
-      this.users = json.users.map((user: UserResponce) => {
+      this.users = res.data.users.map((user: UserResponce) => {
         return {
           ID: user.id,
           USER_NAME: user.name,
@@ -70,9 +68,7 @@ export default class Index extends Vue {
     });
 
     axios.get("../api/users/auth/").then((res) => {
-      const json = JSON.parse(res.data);
-      console.log(json);
-      if (json.screen_name !== null) this.isLoggedIn = true;
+      if (res.data.screen_name !== null) this.isLoggedIn = true;
     });
   }
 

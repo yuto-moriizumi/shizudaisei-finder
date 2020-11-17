@@ -132,11 +132,9 @@ export default class Find extends Vue {
 
   mounted() {
     axios.get("../api/users/auth/").then((res) => {
-      const json = JSON.parse(res.data);
-      console.log(json);
-      this.name = json.name;
+      this.name = res.data.name;
       if (this.name === null) window.location.href = "../twitter/auth.php"; //未認証であれば認証にリダイレクト
-      this.profileImgUrl = json.img_url;
+      this.profileImgUrl = res.data.img_url;
     });
   }
 
@@ -159,9 +157,7 @@ export default class Find extends Vue {
     console.log(query);
 
     axios.get(query).then((res) => {
-      const json = JSON.parse(res.data);
-      console.log(json);
-      this.users = json.users.map((user: UserResponce) => {
+      this.users = res.data.users.map((user: UserResponce) => {
         return {
           ID: user.id,
           USER_NAME: user.name,
@@ -181,8 +177,6 @@ export default class Find extends Vue {
     this.users.forEach((user) => {
       if (user.IS_FOLLOWING !== false) return; //フォロー済か対象ユーザが見つからなかったなら何もしない
       axios.get("../api/users/follow/" + user.ID).then((res) => {
-        const json = JSON.parse(res.data);
-        console.log(json);
         this.followedCount += 1;
         user.IS_FOLLOWING = true;
       });

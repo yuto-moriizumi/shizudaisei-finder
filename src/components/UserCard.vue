@@ -69,9 +69,7 @@ export default class UserCard extends Vue {
   follow() {
     if (this.user.IS_FOLLOWING !== false) return; //フォロー済なら何もしない
     axios.get("../api/users/follow/" + this.user.ID).then((res) => {
-      const json = JSON.parse(res.data);
-      console.log(json);
-      if (json.responce.errors == undefined) this.user.IS_FOLLOWING = true;
+      if (res.data.responce.errors == undefined) this.user.IS_FOLLOWING = true;
       else alert("フォローに失敗しました");
     });
   }

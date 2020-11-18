@@ -176,7 +176,9 @@ export default class Find extends Vue {
     this.followedCount = 0;
     this.users.forEach((user) => {
       if (user.IS_FOLLOWING !== false) return; //フォロー済か対象ユーザが見つからなかったなら何もしない
-      axios.get("../api/users/follow/" + user.ID).then((res) => {
+      const query = "../api/users/follow/" + user.ID;
+      console.log(query);
+      axios.get(query).then((res) => {
         this.followedCount += 1;
         user.IS_FOLLOWING = true;
       });

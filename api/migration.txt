@@ -1,5 +1,7 @@
 bin\cake bake migration createUsers id:string[127]:primary tweet_id:string[255]:unique content:string[255] created_at:datetime
 
+bin\cake bake migration createFriendships from_id:string[127] to_id:string[127] created
+
 bin\cake migrations migrate
 
 bin\cake bake all Users

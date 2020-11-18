@@ -271,6 +271,7 @@ class UsersController extends AppController
 
     public function auth()
     {
+        //認証しているユーザのアカウント名や画像を取得する
         //事前にセッションを使ってトークン取得済である必要があります
         session_start();
         if (!array_key_exists('access_token', $_SESSION)) {
@@ -294,6 +295,7 @@ class UsersController extends AppController
             if (is_object($user2) && property_exists($user2, 'errors')) {
                 $json = json_encode(['screen_name'=>$user->screen_name,'errors'=>$user2->errors]);
             } else {
+                $_SESSION['user_id']=$user2[0]->id_str; //セッションにTwitterユーザIDを保存しておく
                 $json = json_encode(['name'=>$user2[0]->name,'img_url'=>$user2[0]->profile_image_url_https]);
             }
         }
@@ -346,6 +348,14 @@ class UsersController extends AppController
         $access_token = $_SESSION['access_token'];
         $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token['oauth_token'], $access_token['oauth_token_secret']);
         $result=$connection->post('friendships/create', ['user_id'=>$id]);
+        if ($connection->getLastHttpCode()==200) {
+            $this->loadModel('Friendships');
+            $friendship = $this->Friendships->newEntity([
+                'from_id'=>$_SESSION['user_id'],
+                'to_id'=>$id
+            ]);
+            $this->Friendships->save($friendship);
+        }
         $json = json_encode(['responce'=>$result]);
         $this->set(compact('json'));
         $this->viewBuilder()->setLayout('ajax');

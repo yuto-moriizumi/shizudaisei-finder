@@ -33,7 +33,7 @@ jobs:
             - v1-dependencies-
 
       - run:
-          working_directory: src
+          working_directory: api
           command: composer install -n --prefer-dist
 
       - save_cache:

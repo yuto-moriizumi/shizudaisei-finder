@@ -43,6 +43,7 @@ class AppController extends Controller
 
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
+        $this->response = $this->response->withHeader('Access-Control-Allow-Origin', env('CLIENT_URL', 'CORS'));
 
         /*
          * Enable the following component for recommended CakePHP form protection settings.

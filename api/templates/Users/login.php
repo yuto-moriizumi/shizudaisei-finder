@@ -1,5 +1,4 @@
 <?php
-const callbackUrl = 'https://volgakurvar.com/shizudaisei-finder/api/users/callback';
 
 session_start();
 // require_once './secret.php';
@@ -11,7 +10,7 @@ use Abraham\TwitterOAuth\TwitterOAuth;
 //TwitterOAuth をインスタンス化
 $connection = new TwitterOAuth($CONSUMER_KEY, $CONSUMER_SECRET);
 //コールバックURLセット
-$request_token = $connection->oauth('oauth/request_token', array('oauth_callback' => callbackUrl));
+$request_token = $connection->oauth('oauth/request_token', array('oauth_callback' => env('CALLBACK_URL', 'https://volgakurvar.com/shizudaisei-finder/api/users/callback')));
 
 //callback.phpで使うのでセッションに入れる
 $_SESSION['oauth_token'] = $request_token['oauth_token'];

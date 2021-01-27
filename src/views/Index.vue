@@ -71,7 +71,7 @@ export default class Index extends Vue {
     axios.get(this.HOST + "/users/auth/").then((res) => {
       if (res.data.screen_name !== null) this.isLoggedIn = true;
     });
-  }
+  } //test
 
   redirect() {
     window.location.href = this.HOST + "/users/login/";

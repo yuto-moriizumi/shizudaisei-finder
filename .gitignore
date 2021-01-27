@@ -23,3 +23,4 @@ pnpm-debug.log*
 twitter/secret.php
 src/components/secret.php
 api/src/Controller/secret.php
+*.zip

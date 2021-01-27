@@ -31,8 +31,9 @@ $_SESSION['access_token'] = $connection->oauth("oauth/access_token", ["oauth_ver
 // session_regenerate_id();
 
 //リダイレクト
-// header('location: ../dist/#/find/');
+// header("location: ".env("CLIENT_URL", "../../dist")."/#/find/");
+$LOCATION = env("CLIENT_URL", "../../dist")."/#/find/";
 ?>
 <script>
-    window.location.href = "../../dist/#/find/";
+    window.location.href = "<?=$LOCATION?>";
 </script>

@@ -53,8 +53,9 @@ import axios from "axios";
 export default class Index extends Vue {
   private users: Array<User> = [];
   private isLoggedIn = false;
+  private HOST = process.env.VUE_APP_API_HOST ?? "../api";
   mounted() {
-    axios.get("../api/users/?include=true").then((res) => {
+    axios.get(this.HOST + "/users/?include=true").then((res) => {
       this.users = res.data.users.map((user: UserResponce) => {
         return {
           ID: user.id,
@@ -67,15 +68,13 @@ export default class Index extends Vue {
       });
     });
 
-    axios.get("../api/users/auth/").then((res) => {
+    axios.get(this.HOST + "/users/auth/").then((res) => {
       if (res.data.screen_name !== null) this.isLoggedIn = true;
     });
-
-    console.log(process.env.VUE_APP_TEST);
   }
 
   redirect() {
-    window.location.href = "../api/users/login/";
+    window.location.href = this.HOST + "/users/login/";
   }
 }
 </script>
